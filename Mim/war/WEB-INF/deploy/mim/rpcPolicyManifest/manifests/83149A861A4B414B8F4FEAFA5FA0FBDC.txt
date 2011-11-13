@@ -1,0 +1,2 @@
+serviceClass: com.is.mim.client.GreetingService
+path: 51F8E0F47D1541A7B9AFBE7C48ECF410.gwt.rpc
