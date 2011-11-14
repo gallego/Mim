@@ -12,11 +12,12 @@
     <!-- Consider inlining CSS to reduce the number of requested files -->
     <!--                                                               -->
     <link type="text/css" rel="stylesheet" href="Mim.css">
+    <link type="text/css" rel="stylesheet" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.css">
 
     <!--                                           -->
     <!-- Any title is fine                         -->
     <!--                                           -->
-    <title>Web Application Starter Project</title>
+    <title>Mim</title>
     
     <!--                                           -->
     <!-- This script loads your compiled module.   -->
@@ -32,7 +33,7 @@
   <!-- to create a completely dynamic UI.        -->
   <!--                                           -->
   <body>
-
+  
     <!-- OPTIONAL: include this if you want history support -->
     <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
     
@@ -42,21 +43,53 @@
         Your web browser must have JavaScript enabled
         in order for this application to display correctly.
       </div>
-    </noscript>
+    </noscript>  	
+  
+  	<div class="container">
+    
+		<div class="topbar-wrapper" style="z-index: 5; padding-bottom:30px;">
+		<div class="topbar" data-dropdown="dropdown" >
+		  <div class="topbar-inner">
+		    <div class="container">
+		      <h3><a href="#">Mim!</a></h3>
+		      <ul class="nav">
+		        <li class="active"><a href="#">Inicia</a></li>
+		        <li><a href="#">Agenda</a></li>
+		        <li><a href="#">Correo</a></li>
+		        <li><a href="#">Social</a></li>
+		      </ul>
+		      <form class="nav secondary-nav" action="">
+		        <input type="text" placeholder="Buscar" />
+		      </form>
+		    </div>
+		  </div><!-- /topbar-inner -->
+		</div><!-- /topbar -->
+		</div><!-- /topbar-wrapper -->
+    
+    
 
-    <h1>Web Application Starter Project</h1>
+	<div id="centerContainer">
+		<div class="row">
+			<!-- Resumen de agenda -->
+			<div class="span8">
+				<div class="page-header">
+				    <h2>Agenda <small>Listado de tareas que tienes que hacer hoy</small></h2>
+			    </div>
+			    <div id="agendaContainer"></div>
+			    <h4>Para añadir una prioridad: #1 alta, #2 media, #3 baja</h4>	    
+			</div>
+	
+			<!-- Resumen de correo -->
+			<div class="span8">
+				<div class="page-header">
+				    <h2>Correo <small>Listado de correos pendientes</small></h2>
+			    </div>
+				<div id="correoContainer"></div>
+	    	</div>
+	    </div>
+    </div>
 
-    <table align="center">
-      <tr>
-        <td colspan="2" style="font-weight:bold;">Please enter your name:</td>        
-      </tr>
-      <tr>
-        <td id="nameFieldContainer"></td>
-        <td id="sendButtonContainer"></td>
-      </tr>
-      <tr>
-        <td colspan="2" style="color:red;" id="errorLabelContainer"></td>
-      </tr>
-    </table>
+    </div>
+    
   </body>
 </html>

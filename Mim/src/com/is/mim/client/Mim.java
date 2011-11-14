@@ -1,21 +1,28 @@
 package com.is.mim.client;
 
-import com.is.mim.shared.FieldVerifier;
+import java.util.ArrayList;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.is.mim.shared.FieldVerifier;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -35,118 +42,127 @@ public class Mim implements EntryPoint {
 	private final GreetingServiceAsync greetingService = GWT
 			.create(GreetingService.class);
 
+	
+	// Panel de Agenda
+	private VerticalPanel agendaPanel = new VerticalPanel();
+    private HorizontalPanel addAgendaPanel = new HorizontalPanel();
+	private FlexTable agendaFlexTable = new FlexTable();
+	private TextBox addTask = new TextBox();
+    private ArrayList<String> tasks = new ArrayList<String>();
+    
+    // Panel de Correo
+    private VerticalPanel correoPanel = new VerticalPanel();
+	private FlexTable correoFlexTable = new FlexTable();
+    
+
+
+	
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		final Button sendButton = new Button("Send");
-		final TextBox nameField = new TextBox();
-		nameField.setText("GWT User");
-		final Label errorLabel = new Label();
+		panelAgenda();		
+		panelCorreo();
+	}
+	
+	private void panelAgenda() {
+		// Variables del panel de agenda
+		addTask.setStyleName("xlarge");
+		addTask.setText("Nueva tarea");
+		Button sendTask = new Button("Enviar");
+		sendTask.setStyleName("btn primary");
+			
+		
+	    // Creamos la tabla que muestra los datos de la agenda.
+	    agendaFlexTable.setText(0, 0, "#");
+	    agendaFlexTable.setText(0, 1, "Tarea");
+	    agendaFlexTable.setText(0, 2, "Prioridad");
+	    agendaFlexTable.setText(0, 3, "Borrar");
+	    agendaFlexTable.addStyleName("bordered-table zebra-striped");
+	    
+	    // A–adimos el TextBox de a–adir tarea y el boton al panel horizontal
+	    addAgendaPanel.add(addTask);
+	    addAgendaPanel.add(sendTask);
 
-		// We can add style names to widgets
-		sendButton.addStyleName("sendButton");
-
-		// Add the nameField and sendButton to the RootPanel
-		// Use RootPanel.get() to get the entire body element
-		RootPanel.get("nameFieldContainer").add(nameField);
-		RootPanel.get("sendButtonContainer").add(sendButton);
-		RootPanel.get("errorLabelContainer").add(errorLabel);
-
-		// Focus the cursor on the name field when the app loads
-		nameField.setFocus(true);
-		nameField.selectAll();
-
-		// Create the popup dialog box
-		final DialogBox dialogBox = new DialogBox();
-		dialogBox.setText("Remote Procedure Call");
-		dialogBox.setAnimationEnabled(true);
-		final Button closeButton = new Button("Close");
-		// We can set the id of a widget by accessing its Element
-		closeButton.getElement().setId("closeButton");
-		final Label textToServerLabel = new Label();
-		final HTML serverResponseLabel = new HTML();
-		VerticalPanel dialogVPanel = new VerticalPanel();
-		dialogVPanel.addStyleName("dialogVPanel");
-		dialogVPanel.add(new HTML("<b>Sending name to the server:</b>"));
-		dialogVPanel.add(textToServerLabel);
-		dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
-		dialogVPanel.add(serverResponseLabel);
-		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
-		dialogVPanel.add(closeButton);
-		dialogBox.setWidget(dialogVPanel);
-
-		// Add a handler to close the DialogBox
-		closeButton.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				dialogBox.hide();
-				sendButton.setEnabled(true);
-				sendButton.setFocus(true);
-			}
-		});
-
-		// Create a handler for the sendButton and nameField
-		class MyHandler implements ClickHandler, KeyUpHandler {
-			/**
-			 * Fired when the user clicks on the sendButton.
-			 */
-			public void onClick(ClickEvent event) {
-				sendNameToServer();
-			}
-
-			/**
-			 * Fired when the user types in the nameField.
-			 */
-			public void onKeyUp(KeyUpEvent event) {
-				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-					sendNameToServer();
-				}
-			}
-
-			/**
-			 * Send the name from the nameField to the server and wait for a response.
-			 */
-			private void sendNameToServer() {
-				// First, we validate the input.
-				errorLabel.setText("");
-				String textToServer = nameField.getText();
-				if (!FieldVerifier.isValidName(textToServer)) {
-					errorLabel.setText("Please enter at least four characters");
-					return;
-				}
-
-				// Then, we send the input to the server.
-				sendButton.setEnabled(false);
-				textToServerLabel.setText(textToServer);
-				serverResponseLabel.setText("");
-				greetingService.greetServer(textToServer,
-						new AsyncCallback<String>() {
-							public void onFailure(Throwable caught) {
-								// Show the RPC error message to the user
-								dialogBox
-										.setText("Remote Procedure Call - Failure");
-								serverResponseLabel
-										.addStyleName("serverResponseLabelError");
-								serverResponseLabel.setHTML(SERVER_ERROR);
-								dialogBox.center();
-								closeButton.setFocus(true);
-							}
-
-							public void onSuccess(String result) {
-								dialogBox.setText("Remote Procedure Call");
-								serverResponseLabel
-										.removeStyleName("serverResponseLabelError");
-								serverResponseLabel.setHTML(result);
-								dialogBox.center();
-								closeButton.setFocus(true);
-							}
-						});
+	    // A–adimos la tabla y el panel horizontal al panel vertical
+	    agendaPanel.add(agendaFlexTable);
+	    agendaPanel.add(addAgendaPanel);
+	    
+		// Panel de agenda
+		RootPanel.get("agendaContainer").add(agendaPanel);
+		
+		// Move cursor focus to the input box.
+	    addTask.setFocus(true);
+		
+		
+	    // Listen for mouse events on the Add button.
+	    sendTask.addClickHandler(new ClickHandler() {
+	      public void onClick(ClickEvent event) {
+	        addTasks();
+	      }
+	    });
+		
+	    // Listen for keyboard events in the input box.
+	    addTask.addKeyPressHandler(new KeyPressHandler() {
+	      public void onKeyPress(KeyPressEvent event) {
+	        if (event.getCharCode() == KeyCodes.KEY_ENTER) {
+	          addTasks();
+	        }
+	      }
+	    });
+	}
+	
+	private void panelCorreo() {
+		
+	}
+	
+  /**
+   * Add tasks to FlexTable. Executed when the user clicks the sendTask or
+   * presses enter in the addTask.
+   */
+	private void addTasks() {
+		final String symbol = addTask.getText().toUpperCase().trim();
+		char priority = '0';
+		addTask.setFocus(true);
+		
+		// Obtengo la prioridad
+		if (symbol.contains("#")) {
+			int index = symbol.indexOf('#') + 1;
+			priority = symbol.charAt(index);
+			int numPriority = priority - 48;
+			if ((numPriority < 1) || (numPriority > 3)) {
+				Window.alert("La prioridad debe estar comprendida entre 1 (alta), 2 (media) y 3 (baja),");
+				return;
 			}
 		}
-
-		// Add a handler to send the name to the server
-		MyHandler handler = new MyHandler();
-		sendButton.addClickHandler(handler);
-		nameField.addKeyUpHandler(handler);
+		
+		
+		addTask.setText("");
+		
+		// Don't add the stock if it's already in the table.
+		if (tasks.contains(symbol))
+		  return;
+		
+		// Add the stock to the table.
+		int row = agendaFlexTable.getRowCount();
+		tasks.add(symbol);
+		agendaFlexTable.setText(row, 0, "" + row); // Nœmero de fila
+		agendaFlexTable.setText(row, 1, symbol);   // Tarea
+		agendaFlexTable.setText(row, 2, String.valueOf(priority)); // Prioridad
+		
+		
+		// Add a button to remove this stock from the table.
+		Button removeStockButton = new Button("x");
+		removeStockButton.addStyleDependentName("remove");
+		    removeStockButton.addClickHandler(new ClickHandler() {
+		      public void onClick(ClickEvent event) {
+		        int removedIndex = tasks.indexOf(symbol);
+		        tasks.remove(removedIndex);
+		        agendaFlexTable.removeRow(removedIndex + 1);
+		      }
+		    });
+		    agendaFlexTable.setWidget(row, 3, removeStockButton);
+		
 	}
+	
 }
