@@ -36,3 +36,63 @@ h1 {
 #centerContainer {
 	margin-top:20px;
 }
+
+#nav_menu_wrapper { /* this will ba used as a wrapper for the nav_menu so we can center it (nav_menu). especially for IE */
+	height:30px; /* fix bar's height */
+	width:100%; /* use 100% of width */
+	
+	/* the code below will PUT the bar at the bottom */	
+	bottom:0px;
+	position:fixed;
+	
+	/* hide scrollbar for this wrapper */
+	overflow:hidden;
+}
+
+#nav_menu_wrapper .nav_menu { /* the menu itself */
+	height:30px; /* fix bar's height */
+	width:1200px; /* fixed width */
+
+	/* center this div */
+	margin-left:auto;
+	margin-right:auto;	
+	
+	/* add effect */
+	background-color:#333333;
+	border:#666666 solid 1px;
+}
+
+/*
+ * menu links and link effects
+ */
+#nav_menu_wrapper .nav_menu ul {
+	margin-top:5px;
+	list-style:none;
+}
+
+#nav_menu_wrapper .nav_menu li {
+	display:inline;
+}
+
+#nav_menu_wrapper .nav_menu li a {
+	padding-top:3px;
+	padding-bottom:5px;
+	padding-left:9px;			
+	padding-right:9px;
+}
+
+#nav_menu_wrapper .nav_menu a:link, #nav_menu_wrapper .nav_menu a:visited {
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:12px;
+	color:#FFF;
+	text-decoration:none;
+	background-color:#333333;
+}
+
+#nav_menu_wrapper .nav_menu a:hover {
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:12px;
+	color:#FFFFFF;
+	text-decoration:none;
+	background-color:#666666;
+}

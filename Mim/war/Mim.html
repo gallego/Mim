@@ -12,7 +12,7 @@
     <!-- Consider inlining CSS to reduce the number of requested files -->
     <!--                                                               -->
     <link type="text/css" rel="stylesheet" href="Mim.css">
-    <link type="text/css" rel="stylesheet" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.css">
+    <link type="text/css" rel="stylesheet" href="bootstrap.css">
 
     <!--                                           -->
     <!-- Any title is fine                         -->
@@ -25,6 +25,7 @@
     <!-- be added before this line.                -->
     <!--                                           -->
     <script type="text/javascript" language="javascript" src="mim/mim.nocache.js"></script>
+    
   </head>
 
   <!--                                           -->
@@ -51,12 +52,12 @@
 		<div class="topbar" data-dropdown="dropdown" >
 		  <div class="topbar-inner">
 		    <div class="container">
-		      <h3><a href="#">Mim!</a></h3>
 		      <ul class="nav">
-		        <li class="active"><a href="#">Inicia</a></li>
-		        <li><a href="#">Agenda</a></li>
-		        <li><a href="#">Correo</a></li>
-		        <li><a href="#">Social</a></li>
+    		    <li><img src="images/mim.jpg" height="40px" width="80px"></img></li>
+		        <li id="linkInicio"></li>
+		        <li id="linkAgenda"></li>
+		        <li id="linkCorreo"></li>
+		        <li id="linkSocial"></li>
 		      </ul>
 		      <form class="nav secondary-nav" action="">
 		        <input type="text" placeholder="Buscar" />
@@ -66,29 +67,22 @@
 		</div><!-- /topbar -->
 		</div><!-- /topbar-wrapper -->
     
-    
-
-	<div id="centerContainer">
-		<div class="row">
-			<!-- Resumen de agenda -->
-			<div class="span8">
-				<div class="page-header">
-				    <h2>Agenda <small>Listado de tareas que tienes que hacer hoy</small></h2>
-			    </div>
-			    <div id="agendaContainer"></div>
-			    <h4>Para añadir una prioridad: #1 alta, #2 media, #3 baja</h4>	    
-			</div>
-	
-			<!-- Resumen de correo -->
-			<div class="span8">
-				<div class="page-header">
-				    <h2>Correo <small>Listado de correos pendientes</small></h2>
-			    </div>
-				<div id="correoContainer"></div>
-	    	</div>
+		<div id="centerContainer">
+		
 	    </div>
-    </div>
 
+    </div>
+    
+    <div id="nav_menu_wrapper">
+        <div class="nav_menu">
+            <ul>
+                <li><a href="http://ryan.rawswift.com/">Facebook</a></li>
+                <li><a href="http://ryan.rawswift.com/about/">Twitter</a></li>
+                <li><a href="http://ryan.rawswift.com/resume/">Foursquare</a></li>
+                <li><a href="http://ryan.rawswift.com/portfolio/">Portfolio</a></li>
+                <li><a href="http://ryan.rawswift.com/contact/">Contact</a></li>
+            </ul>
+        </div>
     </div>
     
   </body>

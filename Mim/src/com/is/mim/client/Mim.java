@@ -1,33 +1,17 @@
 package com.is.mim.client;
 
-import java.util.ArrayList;
-
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.is.mim.shared.FieldVerifier;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class Mim implements EntryPoint {
+public class Mim implements EntryPoint, ValueChangeHandler<String> {
 	/**
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
@@ -43,126 +27,115 @@ public class Mim implements EntryPoint {
 			.create(GreetingService.class);
 
 	
-	// Panel de Agenda
-	private VerticalPanel agendaPanel = new VerticalPanel();
-    private HorizontalPanel addAgendaPanel = new HorizontalPanel();
-	private FlexTable agendaFlexTable = new FlexTable();
-	private TextBox addTask = new TextBox();
-    private ArrayList<String> tasks = new ArrayList<String>();
-    
-    // Panel de Correo
-    private VerticalPanel correoPanel = new VerticalPanel();
-	private FlexTable correoFlexTable = new FlexTable();
-    
+	//Instancias de las secciones
+	private Inicio inicio = new Inicio();
+	private Agenda agenda = new Agenda();
+	private Correo correo = new Correo();
+	private Social social = new Social();
 
+    private String lastToken;
 
 	
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		panelAgenda();		
-		panelCorreo();
+		crearEnlacesTopBar();
+		inicializaInicio();
 	}
 	
-	private void panelAgenda() {
-		// Variables del panel de agenda
-		addTask.setStyleName("xlarge");
-		addTask.setText("Nueva tarea");
-		Button sendTask = new Button("Enviar");
-		sendTask.setStyleName("btn primary");
-			
-		
-	    // Creamos la tabla que muestra los datos de la agenda.
-	    agendaFlexTable.setText(0, 0, "#");
-	    agendaFlexTable.setText(0, 1, "Tarea");
-	    agendaFlexTable.setText(0, 2, "Prioridad");
-	    agendaFlexTable.setText(0, 3, "Borrar");
-	    agendaFlexTable.addStyleName("bordered-table zebra-striped");
-	    
-	    // A–adimos el TextBox de a–adir tarea y el boton al panel horizontal
-	    addAgendaPanel.add(addTask);
-	    addAgendaPanel.add(sendTask);
-
-	    // A–adimos la tabla y el panel horizontal al panel vertical
-	    agendaPanel.add(agendaFlexTable);
-	    agendaPanel.add(addAgendaPanel);
-	    
-		// Panel de agenda
-		RootPanel.get("agendaContainer").add(agendaPanel);
-		
-		// Move cursor focus to the input box.
-	    addTask.setFocus(true);
-		
-		
-	    // Listen for mouse events on the Add button.
-	    sendTask.addClickHandler(new ClickHandler() {
-	      public void onClick(ClickEvent event) {
-	        addTasks();
-	      }
-	    });
-		
-	    // Listen for keyboard events in the input box.
-	    addTask.addKeyPressHandler(new KeyPressHandler() {
-	      public void onKeyPress(KeyPressEvent event) {
-	        if (event.getCharCode() == KeyCodes.KEY_ENTER) {
-	          addTasks();
-	        }
-	      }
-	    });
-	}
-	
-	private void panelCorreo() {
-		
-	}
-	
-  /**
-   * Add tasks to FlexTable. Executed when the user clicks the sendTask or
-   * presses enter in the addTask.
-   */
-	private void addTasks() {
-		final String symbol = addTask.getText().toUpperCase().trim();
-		char priority = '0';
-		addTask.setFocus(true);
-		
-		// Obtengo la prioridad
-		if (symbol.contains("#")) {
-			int index = symbol.indexOf('#') + 1;
-			priority = symbol.charAt(index);
-			int numPriority = priority - 48;
-			if ((numPriority < 1) || (numPriority > 3)) {
-				Window.alert("La prioridad debe estar comprendida entre 1 (alta), 2 (media) y 3 (baja),");
-				return;
-			}
+	/**
+	 * Funciones que insertan en el div centerContainer cada secci—n.
+	 */
+	private void inicializaInicio() {
+		if (inicio.getFirstInicio()) {
+			RootPanel.get("centerContainer").add(inicio.getSecInicio());
+			inicio.setFirstInicio(false);
 		}
-		
-		
-		addTask.setText("");
-		
-		// Don't add the stock if it's already in the table.
-		if (tasks.contains(symbol))
-		  return;
-		
-		// Add the stock to the table.
-		int row = agendaFlexTable.getRowCount();
-		tasks.add(symbol);
-		agendaFlexTable.setText(row, 0, "" + row); // Nœmero de fila
-		agendaFlexTable.setText(row, 1, symbol);   // Tarea
-		agendaFlexTable.setText(row, 2, String.valueOf(priority)); // Prioridad
-		
-		
-		// Add a button to remove this stock from the table.
-		Button removeStockButton = new Button("x");
-		removeStockButton.addStyleDependentName("remove");
-		    removeStockButton.addClickHandler(new ClickHandler() {
-		      public void onClick(ClickEvent event) {
-		        int removedIndex = tasks.indexOf(symbol);
-		        tasks.remove(removedIndex);
-		        agendaFlexTable.removeRow(removedIndex + 1);
-		      }
-		    });
-		    agendaFlexTable.setWidget(row, 3, removeStockButton);
+	}
+	
+	private void inicializaAgenda() {
+		if (agenda.getFirstAgenda()) {
+			RootPanel.get("centerContainer").add(agenda.getSecAgenda());
+			agenda.setFirstAgenda(false);
+		}
+	}
+	
+	private void inicializaCorreo() {
+		if (correo.getFirstCorreo()) {
+			RootPanel.get("centerContainer").add(correo.getSecCorreo());
+			correo.setFirstCorreo(false);
+		}
+	}
+	
+	private void inicializaSocial() {
+		if (social.getFirstSocial()) {
+			RootPanel.get("centerContainer").add(social.getSecSocial());
+			social.setFirstSocial(false);
+		}
+	}
+	
+	/**
+	 * Esta funcion crea los enlaces en el TopBar.
+	 * @lastToken almacena el œltimo enlace pulsado para poder hacer su secci—n invisible
+	 */
+	private void crearEnlacesTopBar() {
+		Hyperlink linkInicio = new Hyperlink("Inicio", "inicio");
+	    Hyperlink linkAgenda = new Hyperlink("Agenda", "agenda");
+	    Hyperlink linkCorreo = new Hyperlink("Correo", "correo");
+	    Hyperlink linkSocial = new Hyperlink("Social", "social");
+	    
+	    RootPanel.get("linkInicio").add(linkInicio);
+	    RootPanel.get("linkAgenda").add(linkAgenda);
+	    RootPanel.get("linkCorreo").add(linkCorreo);
+	    RootPanel.get("linkSocial").add(linkSocial);
+	    
+	    lastToken = History.getToken();
+
+	    if (lastToken.length() == 0) {
+	      History.newItem("inicio");
+	    }
+	    
+	    // Add history listener
+	    History.addValueChangeHandler(this);
+
+	    // Now that we've setup our listener, fire the initial history state.
+	    History.fireCurrentHistoryState();
 		
 	}
+	
+	 /** 
+	  * Esta funci—n captura los eventos cuando hacemos click en los enlaces
+	  * del TopBar para hacer visible o no cada una de las secciones.
+	  */
+	 public void onValueChange(ValueChangeEvent<String> event) {
+		 	// Comprobamos el lastToken para ver cual fue la secci—n anterior y hacerla invisible
+		 	if ((lastToken.equalsIgnoreCase("inicio")) && (!event.getValue().equalsIgnoreCase("inicio"))) {
+		 		inicio.setInvisible();
+		 	} else if (lastToken.equalsIgnoreCase("agenda")) {
+		 		agenda.setInvisible();
+		 	} else if (lastToken.equalsIgnoreCase("correo")) {
+		 		correo.setInvisible();
+		 	} else if (lastToken.equalsIgnoreCase("social")) {
+		 		social.setInvisible();
+		 	}
+		 
+		 	// Comprobamos cual es la secci—n actual para crearla si es necesario y hacerla visible
+		 	if ((event.getValue().equals("inicio")) && (!lastToken.equalsIgnoreCase("inicio"))) {
+		 		inicio.setVisible();
+	 		} else if (event.getValue().equalsIgnoreCase("agenda")) {
+ 				inicializaAgenda();
+	 			agenda.setVisible();
+		 	} else if (event.getValue().equalsIgnoreCase("correo")) {
+	 			inicializaCorreo();
+		 		correo.setVisible();		 		
+		 	} else if (event.getValue().equalsIgnoreCase("social")) {
+	 			inicializaSocial();
+		 		social.setVisible();		 		
+		 	}
+		 	
+		 	// Actualizamos el lastToken
+		 	lastToken = event.getValue();
+		  }
 	
 }
